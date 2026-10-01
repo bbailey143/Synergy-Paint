@@ -1,0 +1,143 @@
+[hub] Synergy Paint | One set of physical laws. Every material is a recipe of property values, never its own engine.
+  [synergy] The Shared Laws | The rules every material obeys. Synergies never get their own code; they only set the numbers these laws read.
+    [law] Flow | Wet material spreads out and is slowed by its thickness (viscosity). Watercolor races across the paper; oil barely moves.
+    [law] Carry & Settle | Pigment rides inside the liquid, then drops out as the liquid slows. This one law gives you blooms, granulation and dark drying edges.
+    [law] Dry & Cure | Liquid leaves by evaporating (water, alcohol) or hardens by chemistry (oil oxidizing, acrylic forming a film). Each has its own speed.
+    [law] Soak In | The surface drinks liquid at its own rate. Controls feathering, bleeding and how fast an edge freezes in place.
+    [law] Rub Off | A dry stick leaves material when pressure and paper grit beat its hardness. Covers graphite, charcoal, pastel and crayon.
+    [law] Smear & Push | Contact moves material that is already down: stumps, fingers, palette knives, a damp brush.
+    [law] Height | Thick paint keeps its shape if it is stiff enough (impasto). That height then catches light.
+    [law] Light & Color | Layers mix like real pigment (subtractive), not like screen light. Glazes deepen, white tints, opaque paint covers.
+    [law] Gravity & Tilt | The easel angle pulls wet paint into drips and runs.
+    [law] Time | Everything above keeps happening after you lift the brush, so a stroke can keep changing as it dries.
+  [synergy] Pigment | The colored particles themselves. Shared by wet and dry media: ultramarine is the same powder in watercolor, oil and pastel. Only the binder changes.
+    [property] Hue & mass tone | The color straight from the tube, at full strength.
+    [property] Tinting strength | How far a little goes when mixed with white.
+    [property] Transparency | Clear glaze at one end, full cover at the other.
+    [property] Particle size | Big particles granulate and sparkle; fine ones stain smooth.
+    [property] Staining | Does it dye the fibers, or sit on top and lift off?
+    [property] Granulation | Clumping into the paper's valleys. Ultramarine, cerulean and burnt umber are famous for it.
+    [property] Dye or pigment | Dyes dissolve completely (inks, markers). Pigments are particles floating in the binder.
+    [preset] Ultramarine blue | Granulating, semi-transparent, low staining.
+    [preset] Phthalo blue | Fierce stainer, transparent, very fine particles.
+    [preset] Titanium white | Very opaque, strong tinting.
+    [preset] Burnt sienna | Transparent earth, gentle granulation.
+  [synergy] Fluid Medium | Wet media: pigment plus a binder plus a carrier liquid.
+    [property] Binder | What glues the pigment down: gum arabic, linseed oil, acrylic polymer, egg yolk, shellac.
+    [property] Carrier | The liquid that leaves (water, alcohol, solvent) or stays (oil).
+    [property] Viscosity | Thin as ink to thick as butter.
+    [property] Body | Will it hold a peak (impasto) or level itself out?
+    [property] Pigment load | How much color is in one brushload.
+    [property] Open time | How long it stays workable once it is on the surface.
+    [property] Drying mechanism | Evaporates, oxidizes or cures. Sets drying speed and whether it can be re-wet.
+    [property] Re-wettable | Can water wake it up after it dries? Yes for watercolor and gouache, no for acrylic.
+    [property] Surface tension | Makes hard edges, cauliflower blooms, and beading on slick surfaces.
+    [property] Sheen | Matte to gloss once dry.
+    [property] Filler | Chalk or extenders that make gouache opaque and matte.
+    [preset] Watercolor | Thin, water carrier, gum arabic, transparent, re-wettable, granulates, dries fast.
+    [preset] Gouache | Watercolor with more pigment and chalk filler: opaque, matte, still re-wettable.
+    [preset] Acrylic | Water carrier, polymer binder. Dries fast and permanent, holds some body.
+    [preset] Oil | Oil binder that never evaporates and cures over days. Buttery, blends wet-into-wet for a long time.
+    [preset] Ink | Very thin, strong stain. India ink is pigment plus shellac; many drawing inks are dye.
+    [preset] Alcohol ink | Dye in fast-evaporating alcohol. Pushes around and re-dissolves with more alcohol. Shines on non-absorbent surfaces.
+    [preset] Egg tempera | Egg yolk binder, dries in seconds, built up in thin hatched layers.
+    [idea] Encaustic | Pigment in hot wax. Adds temperature as a property: flows when hot, sets when cool.
+    [idea] Fresco | Pigment in water on wet lime plaster. The substrate becomes the binder.
+  [synergy] Solid Medium | Dry media: pigment bound into a stick that wears away against the surface.
+    [property] Hardness | How much pressure it takes to leave a mark. 9H to 9B for graphite.
+    [property] Binder | Clay (graphite), wax (crayon, colored pencil), oil and wax (oil pastel), gum (soft pastel), nothing at all (vine charcoal).
+    [property] Crumble | Does it break into loose dust (charcoal, soft pastel) or lay down a waxy film (crayon)?
+    [property] Smear | How easily a finger or stump moves it after it is down.
+    [property] Grain catch | How much it skips over the paper's valleys versus filling them.
+    [property] Layer limit | How many layers before the tooth fills and nothing more sticks.
+    [property] Sheen | Graphite shines at an angle; charcoal stays dead matte.
+    [property] Erasable | Lifts clean, leaves a ghost, or stays put.
+    [property] Softening | Wax and oil pastel soften with heat or solvent.
+    [property] Water-soluble | Watercolor pencils turn into a wash when wet. A bridge into Fluid Medium.
+    [preset] Graphite pencil lead | Clay and graphite. Harder grades are lighter and crisper.
+    [preset] Vine charcoal | Soft, dusty, wipes off easily.
+    [preset] Compressed charcoal | Darker, has binder, harder to erase.
+    [preset] Colored pencil | Wax or oil binder. Builds in layers and burnishes.
+    [preset] Wax crayon | Waxy film that resists water.
+    [preset] Oil pastel | Buttery, smears, can be thinned with solvent.
+    [preset] Soft pastel | Powdery, very opaque, blends with a finger.
+    [idea] Conté | Between charcoal and pastel. Square stick.
+  [synergy] Substrate | The surface: papers, canvases, boards.
+    [property] Tooth | A height map of hills and valleys. Catches dry media, pools wet media.
+    [property] Absorbency | How fast and how deep it drinks liquid.
+    [property] Sizing | A coating that slows absorbency. Unsized paper feathers like a paper towel.
+    [property] Ground color | White, toned, or a painted ground.
+    [property] Fiber direction | Paper fibers steer how wet media feathers out.
+    [property] Weight | Heavier paper buckles less.
+    [property] Buckling | Paper cockles when wet, and paint puddles in the dips.
+    [property] Surface strength | How much scrubbing, erasing or scraping it takes before it pills or tears.
+    [property] Lift-ability | How easily paint comes back off with a damp brush or tissue.
+    [preset] Cold-press watercolor | Medium tooth, sized, absorbent.
+    [preset] Hot-press watercolor | Smooth. Crisp edges, less granulation.
+    [preset] Rough watercolor | Heavy texture, dry-brush sparkle.
+    [preset] Smooth bristol | Hard and slick. Great for ink and pencil.
+    [preset] Newsprint | Thin, unsized, cheap.
+    [preset] Toned pastel paper | Colored and textured, made for soft pastel.
+    [preset] Sanded pastel paper | Grit like fine sandpaper that holds many pastel layers.
+    [preset] Primed linen canvas | Woven texture under gesso.
+    [preset] Gesso panel | Rigid. Smooth or brushy depending on how it was primed.
+    [preset] Yupo | Plastic paper that absorbs nothing. Paint floats and lifts completely.
+    [idea] Rice paper | Thin and very absorbent. Ink bleeds dramatically.
+  [synergy] Instrument | The tool that touches the surface. It shapes, carries and presses; it brings no color of its own.
+    [property] Tip shape | Round, flat, filbert, fan, chisel, bullet, blade.
+    [property] Tip size | From a fine liner to a wide hake.
+    [property] Spring | How fast the tip snaps back. Sable springs, soft goat flops, a knife never bends.
+    [property] Splay | How much the tip spreads under pressure.
+    [property] Reservoir | How much medium it holds before it runs dry.
+    [property] Release rate | How fast it lets medium go. Low release gives you dry-brush.
+    [property] Pickup | Does it lift paint back off the surface (a thirsty brush), or only lay it down?
+    [property] Bristle texture | Individual hairs leave striations; a knife leaves none.
+    [property] Angle response | The side of the pencil versus the point.
+    [preset] Round brush | Sable. Springy point, holds a lot of water.
+    [preset] Flat brush | Hog bristle. Stiff, square edge, visible strokes.
+    [preset] Filbert | Flat with a rounded end. Soft edges.
+    [preset] Fan brush | Spread hairs for foliage, grass and blending.
+    [preset] Rigger | Long thin hairs for long lines.
+    [preset] Palette knife | Rigid blade. Pushes and scrapes instead of depositing.
+    [preset] Dip pen nib | Line width swells with pressure.
+    [preset] Felt tip | Fixed shape, steady release from a fiber reservoir.
+    [idea] Sponge, rag, finger | Instruments with odd textures and high pickup.
+    [idea] Eraser, stump, tissue | Instruments that remove or move material instead of adding it.
+  [synergy] Bundles | The fuzzy middle: real tools that come with their own medium inside. A Bundle locks an Instrument to a Medium instead of adding new physics.
+    [preset] Pencil | Solid Medium (graphite) + a wood-cased point.
+    [preset] Marker | Fluid Medium (alcohol or water-based dye) + felt tip with a reservoir.
+    [preset] Ballpoint / tech pen | Fluid Medium (ink) + rolling or fixed tip with steady release.
+    [preset] Brush pen | Ink + flexible brush tip fed from a cartridge.
+    [question] Unlock a Bundle? | Should artists be able to open a Bundle and swap its medium, like filling a marker with a different ink?
+  [synergy] Additives | Things you mix in that change a medium's numbers instead of being a medium.
+    [preset] Linseed / stand oil | Slows drying, adds gloss and flow.
+    [preset] Solvent | Turpentine or odorless spirits. Thins oil and speeds drying.
+    [preset] Retarder | Longer open time for acrylic.
+    [preset] Gel medium | Raises body so acrylic holds peaks.
+    [preset] Ox gall | Breaks surface tension so watercolor flows farther.
+    [preset] Masking fluid | Temporary resist you rub off later.
+    [preset] Salt / alcohol drops | Pull pigment into textures on wet watercolor.
+    [preset] Fixative | Locks dry media so it stops smearing.
+  [synergy] Environment | Studio conditions that act on everything at once.
+    [property] Humidity | Humid air slows drying.
+    [property] Temperature | Matters for wax and for drying speed.
+    [property] Easel tilt | Feeds the Gravity & Tilt law.
+    [property] Time speed | Fast-forward drying, or freeze it.
+  [synergy] Interactions | Where Synergies meet. The laws decide these moments; none of them is a special case.
+    [idea] Medium × Substrate | Soak-in, feathering, granulation in valleys, dry-brush skipping.
+    [idea] Instrument × Medium | Loading, running dry, picking paint back up, mixing on the brush.
+    [idea] Instrument × Substrate | Tooth catching the bristle or pencil, pressure, scraping.
+    [idea] Medium × Medium | Wet-into-wet, glazing, fat over lean, wax resisting water.
+    [idea] Medium × Additive | Every additive just shifts a medium's numbers.
+  [synergy] Build Order | Start with the simplest laws and grow. Each step adds laws, never a new engine.
+    [phase] 1 · Paper + graphite | Substrate tooth, the Rub Off law, pressure. No liquid yet.
+    [phase] 2 · All dry media | Add Smear, Pigment color and layer limits. Charcoal, pastel and colored pencil fall out of the same rules.
+    [phase] 3 · Thin fluids | Add Flow, Soak In and Dry. Ink and watercolor.
+    [phase] 4 · Opaque & re-wettable | Add filler and re-wetting. Gouache and acrylic.
+    [phase] 5 · Thick paint | Add Height and long cure times. Oil, impasto, palette knife.
+    [phase] 6 · Bundles & additives | Markers, pens and mixing mediums.
+  [question] Open Questions | Things to decide together. Add your own here.
+    [question] Shareable recipes? | Do Synergies save as named recipes an artist can tweak and share?
+    [question] How many sliders? | Which properties does an artist see by default, and which live under "advanced"?
+    [question] Brush memory in paint? | Should dried paint remember the bristle marks of the brush that laid it?
+    [question] Where does Pigment live? | Is Pigment its own Synergy, or a layer inside every medium?

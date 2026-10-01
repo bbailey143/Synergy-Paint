@@ -1,0 +1,569 @@
+<title>Synergy Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one full-height studio table. Top bar, the map as an endless sheet of paper, an editing drawer on the right (bottom sheet on phones). */
+:root {
+  --paper: #eef0ec;        /* cool cotton paper */
+  --sheet: #f8f9f6;
+  --ink: #22262b;          /* Payne's grey */
+  --ink-soft: #5d646c;
+  --rule: #d3d8d2;
+  --accent: #2d4fa3;       /* ultramarine */
+  --danger: #b03a2e;       /* cadmium red deep */
+  --focus: #2d4fa3;
+  /* branch pigments */
+  --p-laws: #4a5560;
+  --p-pigment: #b8326f;
+  --p-fluid: #2d4fa3;
+  --p-solid: #3c3c3c;
+  --p-substrate: #a8752a;
+  --p-instrument: #8a4b2a;
+  --p-bundles: #6b4aa3;
+  --p-additives: #2f7d6b;
+  --p-environment: #3f7a99;
+  --p-interactions: #b0513a;
+  --p-build: #5b7a2a;
+  --p-questions: #b08a12;
+  --p-other: #5d646c;
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1b1f24; --sheet: #23282e; --ink: #e6e8e3; --ink-soft: #a2a9a6; --rule: #353c43;
+    --accent: #8ea8f0; --danger: #ef8a7c; --focus: #8ea8f0;
+    --p-laws: #a7b3bf; --p-pigment: #ec7fb0; --p-fluid: #8ea8f0; --p-solid: #c9c9c9; --p-substrate: #e0b46a;
+    --p-instrument: #df9a74; --p-bundles: #b9a0ee; --p-additives: #74c9b3; --p-environment: #82c0de;
+    --p-interactions: #ee9a83; --p-build: #a8c86e; --p-questions: #e8c45a; --p-other: #a2a9a6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #1b1f24; --sheet: #23282e; --ink: #e6e8e3; --ink-soft: #a2a9a6; --rule: #353c43;
+  --accent: #8ea8f0; --danger: #ef8a7c; --focus: #8ea8f0;
+  --p-laws: #a7b3bf; --p-pigment: #ec7fb0; --p-fluid: #8ea8f0; --p-solid: #c9c9c9; --p-substrate: #e0b46a;
+  --p-instrument: #df9a74; --p-bundles: #b9a0ee; --p-additives: #74c9b3; --p-environment: #82c0de;
+  --p-interactions: #ee9a83; --p-build: #a8c86e; --p-questions: #e8c45a; --p-other: #a2a9a6;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 14px; overflow: hidden; }
+.app { height: 100%; display: grid; grid-template-rows: auto 1fr; }
+header {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
+  padding-block: 10px; padding-inline: 16px; border-bottom: 1px solid var(--rule); background: var(--sheet);
+}
+h1 { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1; margin: 0; letter-spacing: .01em; }
+h1 em { color: var(--accent); }
+.status { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-left: auto; }
+input, select, textarea, button { font: inherit; color: var(--ink); }
+.search { width: 180px; max-width: 46vw; padding: 6px 10px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); }
+.btn { padding: 6px 11px; border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); cursor: pointer; white-space: nowrap; }
+.btn:hover { border-color: var(--ink-soft); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--sheet); }
+.btn.danger { color: var(--danger); }
+.btn.danger.armed { background: var(--danger); color: var(--sheet); border-color: var(--danger); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.main { position: relative; min-height: 0; display: grid; grid-template-columns: 1fr auto; }
+.stage { position: relative; min-width: 0; overflow: hidden; touch-action: none; cursor: grab; }
+.stage.dragging { cursor: grabbing; }
+svg#map { width: 100%; height: 100%; display: block; user-select: none; }
+.edge { fill: none; stroke-width: 1.6; opacity: .55; }
+.node { cursor: pointer; }
+.node rect { stroke-width: 1.4; }
+.node text { font-family: var(--font-body); font-size: 13px; fill: var(--ink); dominant-baseline: central; }
+.node.k-hub text { font-family: var(--font-display); font-size: 26px; }
+.node.k-synergy text { font-weight: 600; font-size: 14px; }
+.node .kindtag { font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; fill: var(--ink-soft); }
+.node.selected rect.box { stroke-width: 2.6; }
+.node.dim { opacity: .22; }
+.node.hit rect.box { stroke-width: 2.6; stroke-dasharray: 4 3; }
+.node text.toggle { font-family: var(--font-mono); font-size: 11px; font-weight: 400; fill: var(--ink-soft); }
+.node .flag { fill: var(--danger); }
+.legend { position: absolute; left: 16px; bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px 12px; max-width: calc(100% - 140px);
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-soft); background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 10px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { display: inline-block; width: 14px; height: 10px; border: 1.4px solid var(--ink-soft); border-radius: 3px; }
+.zoom { position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+.zoom .btn { width: 36px; padding: 6px 0; text-align: center; }
+.empty { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; }
+.empty p { max-width: 38ch; color: var(--ink-soft); line-height: 1.5; }
+.empty h2 { font-family: var(--font-display); font-weight: 400; font-size: 30px; margin: 0 0 8px; }
+
+aside.drawer { width: 340px; border-left: 1px solid var(--rule); background: var(--sheet); overflow-y: auto; padding-block: 16px; padding-inline: 18px; display: flex; flex-direction: column; gap: 14px; }
+.drawer h2 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin: 0; line-height: 1.1; text-wrap: balance; }
+.eyebrow { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 12px; font-weight: 500; color: var(--ink-soft); }
+.field input, .field select, .field textarea { padding: 7px 9px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); min-width: 0; }
+.field textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; }
+.check input { margin-top: 3px; }
+.meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); line-height: 1.6; }
+.hint { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; }
+.hint kbd { font-family: var(--font-mono); font-size: 11px; border: 1px solid var(--rule); border-radius: 4px; padding: 0 4px; }
+.flaglist { display: flex; flex-direction: column; gap: 4px; }
+.flaglist button { text-align: left; background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.ro-note { font-size: 12.5px; color: var(--danger); }
+.closebtn { display: none; }
+
+@media (max-width: 760px) {
+  .main { grid-template-columns: 1fr; }
+  aside.drawer { position: absolute; left: 0; right: 0; bottom: 0; width: auto; max-height: 55%; border-left: 0; border-top: 1px solid var(--rule); box-shadow: 0 -8px 24px rgba(0,0,0,.12); padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+  aside.drawer.closed { display: none; }
+  .closebtn { display: inline-block; margin-left: auto; }
+  .legend { display: none; }
+  .search { width: 130px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #viewport { transition: transform .0s; }
+}
+</style>
+
+<div class="app">
+  <header>
+    <h1>Synergy <em>Map</em></h1>
+    <span class="status" id="status">Connecting to the shared map…</span>
+    <div class="tools">
+      <input id="search" class="search" type="search" placeholder="Find an idea" aria-label="Find an idea">
+      <button class="btn" id="expandAll" type="button">Open all</button>
+      <button class="btn" id="collapseAll" type="button">Branches only</button>
+      <button class="btn" id="fit" type="button">Fit</button>
+    </div>
+  </header>
+  <div class="main">
+    <div class="stage" id="stage">
+      <svg id="map" aria-label="Mind map of Synergies"><g id="viewport"><g id="edges"></g><g id="nodes"></g></g></svg>
+      <div class="empty" id="empty" hidden>
+        <div>
+          <h2>The sheet is blank</h2>
+          <p id="emptyText">The shared map has no ideas yet. Start with the central idea and branch out from there.</p>
+          <button class="btn primary" id="startBtn" type="button">Add the central idea</button>
+        </div>
+      </div>
+      <div class="legend" id="legend" aria-label="Legend">
+        <span><i style="border-width:2.4px"></i>Synergy</span>
+        <span><i style="border-style:solid"></i>Property</span>
+        <span><i style="border-radius:8px"></i>Preset (a known material)</span>
+        <span><i style="border-style:dashed"></i>Idea / expansion</span>
+        <span><i style="border-style:dotted;border-width:2px"></i>Question</span>
+        <span><i style="background:var(--ink-soft)"></i>Shared law</span>
+      </div>
+      <div class="zoom">
+        <button class="btn" id="zin" type="button" aria-label="Zoom in">+</button>
+        <button class="btn" id="zout" type="button" aria-label="Zoom out">−</button>
+      </div>
+    </div>
+    <aside class="drawer" id="drawer"></aside>
+  </div>
+</div>
+
+<script>
+(() => {
+  const KINDS = {
+    hub: "Central idea", synergy: "Synergy", law: "Shared law", property: "Property",
+    preset: "Preset", idea: "Idea / expansion", question: "Question", phase: "Build step"
+  };
+  const BRANCH_PIGMENT = [
+    ["law", "laws", "Payne's grey"], ["pigment", "pigment", "Quinacridone magenta"], ["fluid", "fluid", "Ultramarine"],
+    ["solid", "solid", "Graphite"], ["substrate", "substrate", "Yellow ochre"], ["instrument", "instrument", "Burnt sienna"],
+    ["bundle", "bundles", "Dioxazine violet"], ["additive", "additives", "Viridian"], ["environment", "environment", "Cerulean"],
+    ["interaction", "interactions", "Cadmium red"], ["build", "build", "Sap green"], ["question", "questions", "Indian yellow"]
+  ];
+  const $ = (s) => document.querySelector(s);
+  const svg = $("#map"), vp = $("#viewport"), gEdges = $("#edges"), gNodes = $("#nodes");
+  const stage = $("#stage"), drawer = $("#drawer"), statusEl = $("#status");
+  const NS = "http://www.w3.org/2000/svg";
+
+  let nodes = new Map();         // id -> data
+  let db = null, canWrite = true, readOnly = false;
+  let selected = null;
+  let collapsed = loadCollapsed();
+  let view = { x: 0, y: 0, k: 0.7 };
+  let firstFit = true;
+  let lastLayout = new Map();
+
+  // ---------- per-viewer conveniences ----------
+  function loadCollapsed() {
+    try { const v = JSON.parse(localStorage.getItem("synergy-collapsed") || "null"); if (Array.isArray(v)) return new Set(v); } catch (e) {}
+    return null; // null = not chosen yet: default to branches only
+  }
+  function saveCollapsed() { try { localStorage.setItem("synergy-collapsed", JSON.stringify([...collapsed])); } catch (e) {} }
+
+  // ---------- text measuring ----------
+  const mctx = document.createElement("canvas").getContext("2d");
+  function measure(text, kind) {
+    mctx.font = kind === "hub" ? '26px "Instrument Serif", Georgia, serif'
+      : kind === "synergy" ? '600 14px "IBM Plex Sans", system-ui, sans-serif'
+      : '13px "IBM Plex Sans", system-ui, sans-serif';
+    return mctx.measureText(text || "Untitled").width;
+  }
+
+  // ---------- tree helpers ----------
+  function childrenOf(id) {
+    const out = [];
+    for (const n of nodes.values()) if ((n.parent || "") === id) out.push(n);
+    out.sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a.label.localeCompare(b.label));
+    return out;
+  }
+  function rootNode() {
+    let r = nodes.get("root");
+    if (r) return r;
+    for (const n of nodes.values()) if (!n.parent || !nodes.has(n.parent)) return n;
+    return null;
+  }
+  function branchOf(id) {
+    let n = nodes.get(id), prev = null, guard = 0;
+    while (n && n.parent && nodes.has(n.parent) && guard++ < 50) { prev = n; n = nodes.get(n.parent); }
+    return prev || nodes.get(id);
+  }
+  function pigmentVar(id) {
+    const b = branchOf(id);
+    if (!b || b.kind === "hub") return "var(--ink)";
+    const key = (b.label + " " + b.id).toLowerCase();
+    for (const [needle, v] of BRANCH_PIGMENT) if (key.includes(needle)) return `var(--p-${v})`;
+    return "var(--p-other)";
+  }
+  function pigmentName(id) {
+    const b = branchOf(id);
+    if (!b || b.kind === "hub") return "Ink";
+    const key = (b.label + " " + b.id).toLowerCase();
+    for (const [needle, , name] of BRANCH_PIGMENT) if (key.includes(needle)) return name;
+    return "Neutral tint";
+  }
+  function descendants(id) {
+    const out = []; const stack = [id];
+    while (stack.length) { const c = stack.pop(); for (const k of childrenOf(c)) { out.push(k.id); stack.push(k.id); } }
+    return out;
+  }
+
+  // ---------- layout: two-sided horizontal tree ----------
+  const ROW = 34, GAP_X = 46;
+  function nodeSize(n) {
+    const w = measure(n.label, n.kind);
+    if (n.kind === "hub") return { w: w + 44, h: 58 };
+    if (n.kind === "synergy") return { w: w + 36, h: 34 };
+    return { w: Math.min(w, 520) + 26, h: 26 };
+  }
+  function layout() {
+    const pos = new Map();
+    const root = rootNode(); if (!root) return pos;
+    const rs = nodeSize(root);
+    pos.set(root.id, { x: 0, y: 0, ...rs, side: 0 });
+    const branches = childrenOf(root.id);
+    const leafCount = (id) => {
+      if (isCollapsed(id)) return 1;
+      const ch = childrenOf(id); if (!ch.length) return 1;
+      return ch.reduce((s, c) => s + leafCount(c.id), 0);
+    };
+    // balance branches between right (+1) and left (-1), keeping list order
+    const total = branches.reduce((s, b) => s + leafCount(b.id), 0);
+    let acc = 0; const right = [], left = [];
+    for (const b of branches) {
+      const side = b.side === "left" ? -1 : b.side === "right" ? 1 : (acc < total / 2 ? 1 : -1);
+      (side === 1 ? right : left).push(b); acc += leafCount(b.id);
+    }
+    function place(list, side) {
+      const h = list.reduce((s, b) => s + leafCount(b.id) * ROW, 0) + (list.length - 1) * 18;
+      let y = -h / 2;
+      for (const b of list) {
+        const bh = leafCount(b.id) * ROW;
+        placeSub(b, side, rs.w / 2 + 70, y, bh);
+        y += bh + 18;
+      }
+    }
+    function placeSub(n, side, xEdge, top, height) {
+      const s = nodeSize(n);
+      const cx = xEdge * side + (s.w / 2) * side;
+      pos.set(n.id, { x: cx, y: top + height / 2, ...s, side });
+      if (isCollapsed(n.id)) return;
+      const ch = childrenOf(n.id);
+      let y = top;
+      const nextEdge = Math.abs(cx) + s.w / 2 + GAP_X;
+      for (const c of ch) { const chh = leafCount(c.id) * ROW; placeSub(c, side, nextEdge, y, chh); y += chh; }
+    }
+    place(right, 1); place(left, -1);
+    return pos;
+  }
+  function isCollapsed(id) { return collapsed ? collapsed.has(id) : false; }
+
+  // ---------- render ----------
+  function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function render() {
+    const root = rootNode();
+    $("#empty").hidden = !!root || !db && readOnly;
+    if (!root) { gEdges.textContent = ""; gNodes.textContent = ""; renderDrawer(); return; }
+    if (collapsed === null) { collapsed = new Set(childrenOf(root.id).filter(b => childrenOf(b.id).length).map(b => b.id)); }
+    const pos = layout(); lastLayout = pos;
+    const q = $("#search").value.trim().toLowerCase();
+    const hits = new Set();
+    if (q) for (const n of nodes.values()) if ((n.label + " " + (n.note || "")).toLowerCase().includes(q)) { hits.add(n.id); }
+    gEdges.textContent = ""; gNodes.textContent = "";
+    for (const [id, p] of pos) {
+      const n = nodes.get(id);
+      if (n.parent && pos.has(n.parent)) {
+        const pp = pos.get(n.parent);
+        const x1 = pp.x + p.side * (pp.w / 2 + (pp.side === 0 ? 0 : 22));
+        const y1 = pp.y, x2 = p.x - p.side * p.w / 2, y2 = p.y, mx = (x1 + x2) / 2;
+        el("path", { class: "edge", d: `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`, stroke: pigmentVar(id) }, gEdges);
+      }
+    }
+    for (const [id, p] of pos) {
+      const n = nodes.get(id), col = pigmentVar(id), k = n.kind || "idea";
+      const g = el("g", { class: `node k-${k}`, transform: `translate(${p.x},${p.y})`, "data-id": id, tabindex: "0", role: "button", "aria-label": n.label }, gNodes);
+      if (selected === id) g.classList.add("selected");
+      if (q && !hits.has(id)) g.classList.add("dim");
+      if (q && hits.has(id)) g.classList.add("hit");
+      const rx = k === "preset" ? 13 : k === "hub" ? 29 : 5;
+      const rect = el("rect", { class: "box", x: -p.w / 2, y: -p.h / 2, width: p.w, height: p.h, rx, stroke: col }, g);
+      if (k === "law") { rect.setAttribute("fill", col); rect.setAttribute("fill-opacity", ".16"); }
+      else if (k === "synergy") { rect.setAttribute("fill", col); rect.setAttribute("fill-opacity", ".12"); rect.setAttribute("stroke-width", "2.4"); }
+      else if (k === "hub") { rect.setAttribute("fill", "var(--sheet)"); rect.setAttribute("stroke-width", "2"); }
+      else rect.setAttribute("fill", "var(--sheet)");
+      if (k === "idea") rect.setAttribute("stroke-dasharray", "5 3");
+      if (k === "question") { rect.setAttribute("stroke-dasharray", "1.5 3"); rect.setAttribute("stroke-width", "2"); rect.setAttribute("stroke-linecap", "round"); }
+      if (k === "phase") { rect.setAttribute("fill", col); rect.setAttribute("fill-opacity", ".08"); }
+      const t = el("text", { x: 0, y: 0, "text-anchor": "middle" }, g);
+      t.textContent = n.label || "Untitled";
+      if (n.flag) el("circle", { class: "flag", cx: p.w / 2 - 2, cy: -p.h / 2 + 2, r: 5 }, g);
+      const ch = childrenOf(id);
+      if (ch.length && k !== "hub") {
+        const tx = p.side * (p.w / 2 + 12);
+        const tg = el("text", { class: "toggle", x: tx, y: 0, "text-anchor": "middle", "data-toggle": id }, g);
+        tg.textContent = isCollapsed(id) ? `+${ch.length}` : "−";
+      }
+    }
+    applyView();
+    if (firstFit && pos.size) { firstFit = false; fit(); }
+    renderDrawer();
+  }
+
+  // ---------- pan & zoom ----------
+  function applyView() { vp.setAttribute("transform", `translate(${view.x},${view.y}) scale(${view.k})`); }
+  function fit() {
+    if (!lastLayout.size) return;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const p of lastLayout.values()) { x0 = Math.min(x0, p.x - p.w / 2 - 30); x1 = Math.max(x1, p.x + p.w / 2 + 30); y0 = Math.min(y0, p.y - p.h / 2); y1 = Math.max(y1, p.y + p.h / 2); }
+    const r = svg.getBoundingClientRect();
+    const k = Math.min(1.4, Math.max(0.2, Math.min(r.width / (x1 - x0 + 40), r.height / (y1 - y0 + 80))));
+    view = { k, x: r.width / 2 - ((x0 + x1) / 2) * k, y: r.height / 2 - ((y0 + y1) / 2) * k };
+    applyView();
+  }
+  function zoomAt(f, cx, cy) {
+    const k = Math.min(2.5, Math.max(0.15, view.k * f)); const r = k / view.k;
+    view.x = cx - (cx - view.x) * r; view.y = cy - (cy - view.y) * r; view.k = k; applyView();
+  }
+  function centerOn(id) {
+    const p = lastLayout.get(id); if (!p) return; const r = svg.getBoundingClientRect();
+    view.x = r.width / 2 - p.x * view.k; view.y = r.height / 2 - p.y * view.k; applyView();
+  }
+  svg.addEventListener("wheel", (e) => { e.preventDefault(); const r = svg.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  const pointers = new Map(); let panStart = null, pinch = null, moved = false;
+  svg.addEventListener("pointerdown", (e) => {
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); moved = false;
+    if (pointers.size === 1) panStart = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
+    if (pointers.size === 2) { const [a, b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), k: view.k }; }
+  });
+  svg.addEventListener("pointermove", (e) => {
+    if (!pointers.has(e.pointerId)) return; pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 2 && pinch) {
+      const [a, b] = [...pointers.values()]; const r = svg.getBoundingClientRect();
+      const d = Math.hypot(a.x - b.x, a.y - b.y); zoomAt((pinch.k * d / pinch.d) / view.k, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); moved = true; return;
+    }
+    if (panStart) {
+      const dx = e.clientX - panStart.x, dy = e.clientY - panStart.y;
+      if (Math.abs(dx) + Math.abs(dy) > 4) { moved = true; stage.classList.add("dragging"); svg.setPointerCapture(e.pointerId); }
+      if (moved) { view.x = panStart.vx + dx; view.y = panStart.vy + dy; applyView(); }
+    }
+  });
+  const endPtr = (e) => { pointers.delete(e.pointerId); if (pointers.size < 2) pinch = null; if (!pointers.size) { panStart = null; stage.classList.remove("dragging"); } };
+  svg.addEventListener("pointerup", endPtr); svg.addEventListener("pointercancel", endPtr);
+  svg.addEventListener("click", (e) => {
+    if (moved) return;
+    const tg = e.target.closest("[data-toggle]");
+    if (tg) { toggle(tg.getAttribute("data-toggle")); return; }
+    const g = e.target.closest(".node");
+    if (g) select(g.getAttribute("data-id")); else select(null);
+  });
+  svg.addEventListener("dblclick", (e) => { const g = e.target.closest(".node"); if (g) toggle(g.getAttribute("data-id")); });
+  gNodes.addEventListener("keydown", (e) => {
+    const g = e.target.closest(".node"); if (!g) return;
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(g.getAttribute("data-id")); }
+  });
+  $("#zin").onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(1.25, r.width / 2, r.height / 2); };
+  $("#zout").onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(0.8, r.width / 2, r.height / 2); };
+  $("#fit").onclick = fit;
+  $("#expandAll").onclick = () => { collapsed = new Set(); saveCollapsed(); render(); fit(); };
+  $("#collapseAll").onclick = () => { const r = rootNode(); collapsed = new Set(r ? childrenOf(r.id).map(b => b.id) : []); saveCollapsed(); render(); fit(); };
+  $("#search").addEventListener("input", () => {
+    const q = $("#search").value.trim().toLowerCase();
+    if (q) { // open the branches that hold matches
+      for (const n of nodes.values()) if ((n.label + " " + (n.note || "")).toLowerCase().includes(q)) { let p = n.parent; while (p && nodes.has(p)) { collapsed.delete(p); p = nodes.get(p).parent; } }
+    }
+    render();
+  });
+
+  function toggle(id) { if (!collapsed) collapsed = new Set(); collapsed.has(id) ? collapsed.delete(id) : collapsed.add(id); saveCollapsed(); render(); }
+  function select(id) {
+    selected = id; render();
+    if (id) { drawer.classList.remove("closed"); }
+  }
+
+  // ---------- drawer ----------
+  let armedDelete = false;
+  function renderDrawer() {
+    const active = document.activeElement;
+    if (active && drawer.contains(active) && (active.tagName === "INPUT" || active.tagName === "TEXTAREA") && active.dataset.for === selected) return; // don't clobber typing
+    armedDelete = false;
+    const n = selected && nodes.get(selected);
+    if (!n) { drawer.innerHTML = overviewHTML(); bindOverview(); return; }
+    const parentOpts = [...nodes.values()].filter(o => o.id !== n.id && !descendants(n.id).includes(o.id))
+      .sort((a, b) => a.label.localeCompare(b.label))
+      .map(o => `<option value="${esc(o.id)}" ${o.id === n.parent ? "selected" : ""}>${esc(o.label)}</option>`).join("");
+    const dis = readOnly ? "disabled" : "";
+    drawer.innerHTML = `
+      <div class="row" style="align-items:center"><span class="eyebrow">${esc(KINDS[n.kind] || "Idea")} · ${esc(pigmentName(n.id))}</span><button class="btn closebtn" id="dClose" type="button">Close</button></div>
+      <h2>${esc(n.label || "Untitled")}</h2>
+      ${readOnly ? `<p class="ro-note">You can read this map but not change it. Ask the owner for Contributor access to edit.</p>` : ""}
+      <div class="field"><label for="fLabel">Name</label><input id="fLabel" data-for="${esc(n.id)}" value="${esc(n.label)}" ${dis}></div>
+      <div class="field"><label for="fNote">Notes</label><textarea id="fNote" data-for="${esc(n.id)}" ${dis}>${esc(n.note || "")}</textarea></div>
+      <div class="field"><label for="fKind">Kind</label><select id="fKind" ${dis}>${Object.entries(KINDS).map(([k, v]) => `<option value="${k}" ${k === n.kind ? "selected" : ""}>${v}</option>`).join("")}</select></div>
+      ${n.parent ? `<div class="field"><label for="fParent">Belongs under</label><select id="fParent" ${dis}>${parentOpts}</select></div>` : ""}
+      <label class="check"><input type="checkbox" id="fFlag" ${n.flag ? "checked" : ""} ${dis}><span>Flag to discuss with Claude. Flags show as a red dot.</span></label>
+      <div class="row">
+        <button class="btn primary" id="addChild" type="button" ${dis}>Add idea under this</button>
+        ${n.parent ? `<button class="btn" id="addSib" type="button" ${dis}>Add idea beside</button>` : ""}
+      </div>
+      <div class="row">
+        ${n.parent ? `<button class="btn" id="up" type="button" ${dis}>Move up</button><button class="btn" id="down" type="button" ${dis}>Move down</button>` : ""}
+        ${n.parent ? `<button class="btn danger" id="del" type="button" ${dis}>Delete</button>` : ""}
+      </div>
+      <p class="meta">Added by ${n.by === "claude" ? "Claude" : "you on the map"}${n.parent ? "" : " · central idea"}<br>${childrenOf(n.id).length} idea(s) directly under this</p>
+      <p class="hint">Your edits save on their own and show up for Claude right away.</p>`;
+    bindNode(n);
+  }
+  function overviewHTML() {
+    const flagged = [...nodes.values()].filter(n => n.flag);
+    const byKind = {}; for (const n of nodes.values()) byKind[n.kind] = (byKind[n.kind] || 0) + 1;
+    return `
+      <span class="eyebrow">Planning stage</span>
+      <h2>One world, many materials</h2>
+      <p class="hint">Each colored branch is a Synergy: a recipe of property values that the Shared Laws read. Change the numbers and watercolor becomes gouache, with no new engine.</p>
+      <p class="hint">Click any idea to edit its name and notes, add ideas under it, move it, or flag it for discussion. Click <kbd>+</kbd> / <kbd>−</kbd> beside a box to open or fold a branch. Drag the paper to move around; scroll or pinch to zoom.</p>
+      <p class="meta">${nodes.size} ideas · ${byKind.synergy || 0} synergies · ${byKind.law || 0} laws · ${byKind.property || 0} properties · ${byKind.preset || 0} presets · ${byKind.question || 0} questions</p>
+      <div><span class="eyebrow">Flagged to discuss</span>
+      <div class="flaglist">${flagged.length ? flagged.map(n => `<button type="button" data-go="${esc(n.id)}">${esc(n.label)}</button>`).join("") : `<p class="hint">Nothing flagged yet. Open an idea and tick "Flag to discuss with Claude".</p>`}</div></div>`;
+  }
+  function bindOverview() {
+    drawer.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { const id = b.dataset.go; let p = nodes.get(id)?.parent; while (p) { collapsed?.delete(p); p = nodes.get(p)?.parent; } select(id); centerOn(id); });
+  }
+  const timers = {};
+  function debounceWrite(id, patch) {
+    Object.assign(nodes.get(id), patch);
+    clearTimeout(timers[id]); timers[id] = setTimeout(() => write(id, patch), 600);
+  }
+  let pendingPatch = {};
+  function bindNode(n) {
+    const id = n.id;
+    const lab = $("#fLabel"), note = $("#fNote");
+    $("#dClose") && ($("#dClose").onclick = () => { drawer.classList.add("closed"); });
+    if (readOnly) return;
+    lab.oninput = () => { pendingPatch[id] = { ...(pendingPatch[id] || {}), label: lab.value }; debounceWrite(id, pendingPatch[id]); drawer.querySelector("h2").textContent = lab.value || "Untitled"; };
+    lab.onblur = () => render();
+    note.oninput = () => { pendingPatch[id] = { ...(pendingPatch[id] || {}), note: note.value }; debounceWrite(id, pendingPatch[id]); };
+    $("#fKind").onchange = (e) => { nodes.get(id).kind = e.target.value; write(id, { kind: e.target.value }); render(); };
+    $("#fParent") && ($("#fParent").onchange = (e) => { const p = e.target.value; const order = nextOrder(p); Object.assign(nodes.get(id), { parent: p, order }); collapsed?.delete(p); write(id, { parent: p, order }); render(); });
+    $("#fFlag").onchange = (e) => { nodes.get(id).flag = e.target.checked; write(id, { flag: e.target.checked }); render(); };
+    $("#addChild").onclick = () => { collapsed?.delete(id); create(id, defaultChildKind(n)); };
+    $("#addSib") && ($("#addSib").onclick = () => create(n.parent, n.kind === "synergy" ? "synergy" : n.kind));
+    $("#up") && ($("#up").onclick = () => shift(id, -1));
+    $("#down") && ($("#down").onclick = () => shift(id, 1));
+    $("#del") && ($("#del").onclick = (e) => {
+      const btn = e.currentTarget; const all = [id, ...descendants(id)];
+      if (!armedDelete) { armedDelete = true; btn.classList.add("armed"); btn.textContent = all.length > 1 ? `Delete ${all.length} ideas?` : "Really delete?"; return; }
+      removeIds(all);
+    });
+  }
+  function defaultChildKind(n) { return n.kind === "hub" ? "synergy" : n.kind === "synergy" ? "property" : "idea"; }
+  function nextOrder(parent) { const ch = childrenOf(parent); return ch.length ? Math.max(...ch.map(c => c.order ?? 0)) + 10 : 10; }
+  function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+  // ---------- writes ----------
+  function setStatus(t) { statusEl.textContent = t; }
+  async function write(id, patch) {
+    if (!db || readOnly) return;
+    delete pendingPatch[id];
+    try { setStatus("Saving…"); await db.collection("nodes").doc(id).update(patch); setStatus("Saved · shared with Claude"); }
+    catch (e) { handleWriteError(e); }
+  }
+  async function create(parent, kind) {
+    if (!db || readOnly) return;
+    const ref = db.collection("nodes").doc();
+    const data = { label: "New idea", note: "", kind, parent: parent || "", order: nextOrder(parent || ""), by: "artist" };
+    nodes.set(ref.id, { id: ref.id, ...data });
+    selected = ref.id; render();
+    setTimeout(() => { const f = $("#fLabel"); if (f) { f.focus(); f.select(); } }, 30);
+    try { await ref.set(data); setStatus("Saved · shared with Claude"); } catch (e) { handleWriteError(e); }
+  }
+  async function createRoot() {
+    if (!db) return;
+    try { await db.collection("nodes").doc("root").set({ label: "Synergy Paint", note: "", kind: "hub", parent: "", order: 10, by: "artist" }); } catch (e) { handleWriteError(e); }
+  }
+  async function shift(id, dir) {
+    const n = nodes.get(id); const sib = childrenOf(n.parent); const i = sib.findIndex(s => s.id === id); const j = i + dir;
+    if (j < 0 || j >= sib.length) return;
+    const other = sib[j]; const a = n.order ?? 0, b = other.order ?? 0;
+    const [na, nb] = a === b ? [b + dir, a] : [b, a];
+    n.order = na; other.order = nb; render();
+    await write(id, { order: na }); await write(other.id, { order: nb });
+  }
+  async function removeIds(ids) {
+    if (!db || readOnly) return;
+    const parent = nodes.get(ids[0])?.parent || null;
+    ids.forEach(i => nodes.delete(i)); selected = parent; render();
+    try { setStatus("Deleting…"); for (const i of ids) await db.collection("nodes").doc(i).delete(); setStatus("Deleted · shared with Claude"); }
+    catch (e) { handleWriteError(e); }
+  }
+  function handleWriteError(e) {
+    if (e && (e.code === "invalid_argument" || e.code === "not_granted")) { readOnly = true; setStatus("View only"); render(); return; }
+    if (e && e.code === "quota_exceeded") { setStatus("The map is full. Delete a few ideas to add more."); return; }
+    setStatus("Couldn't save just now. Your last change may not have reached the shared map.");
+  }
+
+  // ---------- boot ----------
+  $("#startBtn").onclick = createRoot;
+  renderDrawer();
+  (async () => {
+    db = await window.claude?.use?.("db");
+    if (!db) {
+      readOnly = true; setStatus("Shared map unavailable here");
+      $("#empty").hidden = false; $("#emptyText").textContent = "Open this page signed in to claude.ai to see and edit the shared map."; $("#startBtn").hidden = true;
+      return;
+    }
+    try {
+      const user = await window.claude.use("user");
+      const can = user ? await user.can("data.write") : null;
+      if (can === false) { readOnly = true; }
+    } catch (e) {}
+    setStatus(readOnly ? "View only" : "Live · edits are shared");
+    db.collection("nodes").onSnapshot((snap) => {
+      const next = new Map();
+      for (const d of snap.docs) {
+        const data = { id: d.id, label: "", note: "", kind: "idea", parent: "", order: 0, ...d.data() };
+        if (pendingPatch[d.id]) Object.assign(data, pendingPatch[d.id]); // keep what's being typed
+        next.set(d.id, data);
+      }
+      nodes = next;
+      if (selected && !nodes.has(selected)) selected = null;
+      render();
+    }, (e) => { setStatus("Lost the live connection. Reload the page to reconnect."); });
+  })();
+  window.addEventListener("resize", () => applyView());
+})();
+</script>
